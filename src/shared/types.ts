@@ -33,6 +33,17 @@ export interface Payment {
   note?: string;
   createdAt: string;
   recordedBy?: string; // set by the server from the Home Assistant user
+  receipts?: ReceiptMeta[]; // managed by the server through the receipts API
+}
+
+/** A stored payment confirmation file (PDF or image). */
+export interface ReceiptMeta {
+  id: string;
+  fileName: string;
+  mime: string;
+  size: number;
+  uploadedBy?: string;
+  createdAt: string;
 }
 
 export interface Template {

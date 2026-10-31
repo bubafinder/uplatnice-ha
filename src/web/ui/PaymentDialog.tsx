@@ -3,6 +3,7 @@ import { formatAmount, parseAmount } from '../../shared/hub3';
 import { currencyLabel, parsePeriodInput, parseYm, shortYm, todayIso, ym } from '../../shared/history';
 import type { Currency, Payment } from '../../shared/types';
 import { newId } from '../lib/storage';
+import { ReceiptPicker } from './receipts';
 
 export interface Destination {
   value: string; // 'template:<id>' | 'tracker:<id>' | 'new-template'
@@ -15,7 +16,7 @@ interface Props {
   methods: string[];
   existing: Payment[]; // used to warn about duplicate entries
   destinations?: { options: Destination[]; initial: string; newName: string };
-  onSave: (p: Payment, dest?: { value: string; newName: string }) => void;
+  onSave: (p: Payment, dest: { value: string; newName: string } | undefined, files: File[]) => void;
   onCancel: () => void;
   onDelete?: () => void;
   saveLabel?: string;
@@ -37,6 +38,9 @@ export function PaymentDialog(p: Props) {
   const [dest, setDest] = useState(p.destinations?.initial ?? '');
   const [newName, setNewName] = useState(p.destinations?.newName ?? '');
   const [tried, setTried] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const receiptCount = init.receipts?.length ?? 0;
 
   const period = noPeriod ? null : parsePeriodInput(periodText);
   const periodErr = !noPeriod && !period ? (periodText ? 'Upiši mjesec kao MM/GG, npr. 11/26.' : 'Upiši za koji mjesec, ili označi posebnu uplatu.') : null;
@@ -68,7 +72,7 @@ export function PaymentDialog(p: Props) {
       note: note.trim() || undefined,
       createdAt: init.createdAt ?? new Date().toISOString(),
     };
-    p.onSave(pay, p.destinations ? { value: dest, newName: newName.trim() } : undefined);
+    p.onSave({ ...pay, ...(init.receipts ? { receipts: init.receipts } : {}) }, p.destinations ? { value: dest, newName: newName.trim() } : undefined, files);
   };
 
   return (
@@ -152,8 +156,20 @@ export function PaymentDialog(p: Props) {
           <input id="pay-note" value={note} onChange={e => setNote(e.target.value)} placeholder="Nije obavezno" />
         </div>
 
+        <ReceiptPicker files={files} setFiles={setFiles} />
+        {receiptCount > 0 && <p className="picker-hint">Već spremljeno potvrda: {receiptCount}. Pregled i brisanje su u povijesti, preko ikone 📎.</p>}
+
         <div className="modal-actions">
-          {p.onDelete ? <button type="button" className="link danger-link" onClick={p.onDelete}>Obriši zapis</button> : <span />}
+          {p.onDelete ? (
+            confirmDelete ? (
+              <span className="confirm-inline">
+                <button type="button" className="danger small" onClick={p.onDelete}>{receiptCount ? `Obriši zapis i potvrde (${receiptCount})` : 'Obriši zapis'}</button>
+                <button type="button" className="link small" onClick={() => setConfirmDelete(false)}>Ne</button>
+              </span>
+            ) : (
+              <button type="button" className="link danger-link" onClick={() => setConfirmDelete(true)}>Obriši zapis…</button>
+            )
+          ) : <span />}
           <button type="button" className="link" onClick={p.onCancel}>Odustani</button>
           <button type="submit" className="primary">{p.saveLabel ?? 'Spremi'}</button>
         </div>

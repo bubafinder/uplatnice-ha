@@ -67,7 +67,7 @@ export async function decodeImageFile(file: Blob): Promise<string | null> {
 }
 
 let pdfjsPromise: Promise<any> | null = null;
-async function pdfjs() {
+export async function loadPdfJs() {
   if (!pdfjsPromise) pdfjsPromise = (async () => {
     const lib = (await import('pdfjs-dist/build/pdf.min.mjs')) as any;
     // @ts-ignore – esbuild loads the worker as text
@@ -79,7 +79,7 @@ async function pdfjs() {
 }
 
 export async function decodePdfFile(file: Blob, onPage?: (n: number, total: number) => void): Promise<string | null> {
-  const lib = await pdfjs();
+  const lib = await loadPdfJs();
   const task = lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false });
   const doc = await task.promise;
   try {

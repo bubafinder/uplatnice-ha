@@ -9,7 +9,8 @@
 ## Workflow
 
 - Never push to `main`. Every change goes on a branch (`feat/…`, `fix/…`, `chore/…`) and is opened as a pull request for the owner to review and merge.
-- Keep PRs small and focused: one feature or fix per PR. Larger work is split into a sequence of PRs.
+- One feature per PR, end to end: backend, frontend, tests and docs together, so the owner can review and try the whole feature at once. Do not split a feature into backend-only and frontend-only PRs.
+- The owner is a QA automation engineer: every PR includes a manual test plan (steps with expected results) and automated tests, including an end-to-end test for user-facing features (`test/e2e`).
 - The PR description (in English) explains what changed, why, how it was tested, and what the reviewer should check manually.
 - Wait for the owner to confirm the merge before building on top of an unmerged PR. If follow-up work is needed meanwhile, branch from the PR branch and say so in the description.
 - Releases: bump `version` in `uplatnice/config.yaml`, add a CHANGELOG entry, merge, then push a tag `vX.Y.Z` matching that version. Only tags publish add-on images, so merged but untagged changes never reach Home Assistant.

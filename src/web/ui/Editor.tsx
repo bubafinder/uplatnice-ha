@@ -8,6 +8,7 @@ import { MAX } from '../../shared/text';
 import type { FieldKey, Issue, OwnerRef, Payment, Slip, Template } from '../../shared/types';
 import { todayIso, ym } from '../../shared/history';
 import { PaymentDialog } from './PaymentDialog';
+import { useReceipts } from './receipts';
 import { matrixToCanvas, matrixToSvg, pdf417Matrix } from '../lib/barcode';
 import { buildPdf, pdfFileName } from '../lib/pdf';
 import { addPayments, newId, rememberMethod, type Store } from '../lib/storage';
@@ -67,6 +68,7 @@ export function Editor({ draft, setDraft, store, update, goProfile, toast, onNew
   const [big, setBig] = useState(false);
   const [saving, setSaving] = useState<null | { name: string; desc: Suggestion | null }>(null);
   const [recording, setRecording] = useState(false);
+  const { upload: uploadReceipts } = useReceipts();
 
   const requireValid = () => {
     if (!matrix) {
@@ -135,7 +137,7 @@ export function Editor({ draft, setDraft, store, update, goProfile, toast, onNew
     setSaving(null);
   };
 
-  const recordPayment = (p: Payment, dest?: { value: string; newName: string }) => {
+  const recordPayment = (p: Payment, dest: { value: string; newName: string } | undefined, files: File[]) => {
     let ref: OwnerRef;
     if (template) ref = { kind: 'template', id: template.id };
     else if (dest?.value === 'new-template') {
@@ -156,6 +158,7 @@ export function Editor({ draft, setDraft, store, update, goProfile, toast, onNew
     markUsed();
     toast(`Zabilježeno: ${p.period ? p.period.slice(5, 7) + '/' + p.period.slice(2, 4) : 'posebna uplata'}, ${formatAmount(p.amountCents)} ${p.currency === 'EUR' ? 'EUR' : 'kn'}.`);
     onRecorded(ref, p.id);
+    if (files.length) void uploadReceipts(p.id, files);
   };
 
   const errorsLeft = issues.filter(i => i.level === 'error');

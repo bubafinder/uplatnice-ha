@@ -6,6 +6,7 @@ import type { Currency, OwnerRef, Payment } from '../../shared/types';
 import { addPayments, getOwner, rememberMethod, updateOwner, type Store } from '../lib/storage';
 import { PasteImport } from './PasteImport';
 import { PaymentDialog } from './PaymentDialog';
+import { ReceiptsDialog, useReceipts } from './receipts';
 import { StatusBadge } from './StatusBadge';
 
 interface Props {
@@ -47,9 +48,12 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
   const status = statusFor(owner.payments, owner.pauseMonths, now);
   const missingCount = groups.reduce((a, g) => a + g.rows.reduce((n, r) => n + (r.kind === 'missing' ? 1 : r.kind === 'gap' ? r.count : 0), 0), 0);
 
-  const savePayment = (p: Payment, editing: boolean) => {
+  const { upload } = useReceipts();
+  const [receiptsFor, setReceiptsFor] = useState<string | null>(null);
+
+  const savePayment = (p: Payment, editing: boolean, files: File[] = []) => {
     update(s => {
-      let next = editing
+      const next = editing
         ? updateOwner(s, ownerRef, o => ({ payments: o.payments.map(x => (x.id === p.id ? p : x)) }))
         : addPayments(s, ownerRef, [p]);
       return rememberMethod(next, p.method);
@@ -57,6 +61,7 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
     setDialog(null);
     setFlash(p.id);
     toast(editing ? 'Zapis je izmijenjen.' : `Zabilježeno: ${p.period ? shortYm(p.period) : 'posebna uplata'}, ${formatAmount(p.amountCents)} ${currencyLabel(p.currency)}.`);
+    if (files.length) void upload(p.id, files);
   };
 
   const deletePayment = (id: string) => {
@@ -153,12 +158,12 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
           <div className="table-wrap">
             <table className="hist-table">
               <thead>
-                <tr><th>Mjesec</th><th className="num">Iznos</th><th>Datum plaćanja</th><th>Način</th><th>Napomena</th><th>Zabilježio</th><th aria-label="Radnje" /></tr>
+                <tr><th>Mjesec</th><th className="num">Iznos</th><th>Datum plaćanja</th><th>Način</th><th>Napomena</th><th>Zabilježio</th><th>Potvrda</th><th aria-label="Radnje" /></tr>
               </thead>
               {groups.map(g => (
                 <tbody key={g.year}>
                   <tr className="year-row">
-                    <th colSpan={7} scope="rowgroup">
+                    <th colSpan={8} scope="rowgroup">
                       <span className="yr">{g.year}.</span>
                       {g.count > 0 ? (
                         <>
@@ -171,13 +176,13 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
                   {g.rows.map(r => r.kind === 'gap' ? (
                     <tr key={'g' + r.from} className="missing">
                       <td>{shortYm(r.from)} – {shortYm(r.to)}</td>
-                      <td colSpan={5} className="gap-text">{plural(r.count, 'mjesec', 'mjeseca', 'mjeseci')} bez zapisa</td>
+                      <td colSpan={6} className="gap-text">{plural(r.count, 'mjesec', 'mjeseca', 'mjeseci')} bez zapisa</td>
                       <td className="row-act" />
                     </tr>
                   ) : r.kind === 'missing' ? (
                     <tr key={'m' + r.ym} className="missing">
                       <td>{shortYm(r.ym)}</td>
-                      <td colSpan={5} className="gap-text">{r.ym === now ? 'Ovaj mjesec još nije zabilježen' : 'Nema zapisa'}</td>
+                      <td colSpan={6} className="gap-text">{r.ym === now ? 'Ovaj mjesec još nije zabilježen' : 'Nema zapisa'}</td>
                       <td className="row-act"><button className="link small" onClick={() => addFor(r.ym)}>Dodaj</button></td>
                     </tr>
                   ) : (
@@ -188,6 +193,15 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
                       <td className="c-method" data-label="Način">{r.p.method ?? <span className="dim">–</span>}</td>
                       <td className="note" data-label="Napomena">{r.p.note}</td>
                       <td className="c-who" data-label="Zabilježio">{r.p.recordedBy ?? <span className="dim">–</span>}</td>
+                      <td className="c-receipt">
+                        {r.p.receipts?.length ? (
+                          <button className="receipt-btn" onClick={() => setReceiptsFor(r.p.id)} aria-label={`Potvrde: ${r.p.receipts.length}`}>
+                            <span aria-hidden>📎</span> {r.p.receipts.length}
+                          </button>
+                        ) : (
+                          <button className="no-receipt" onClick={() => setReceiptsFor(r.p.id)}>bez potvrde</button>
+                        )}
+                      </td>
                       <td className="row-act"><button className="link small" onClick={() => setDialog({ initial: r.p, editing: true })}>Uredi</button></td>
                     </tr>
                   ))}
@@ -205,10 +219,15 @@ export function History({ ownerRef, store, update, highlight, back, openSlip, to
           methods={store.methods}
           existing={owner.payments}
           onCancel={() => setDialog(null)}
-          onSave={p => savePayment(p, dialog.editing)}
+          onSave={(p, _dest, files) => savePayment(p, dialog.editing, files)}
           onDelete={dialog.editing ? () => deletePayment(dialog.initial.id!) : undefined}
         />
       )}
+      {receiptsFor && (() => {
+        const p = owner.payments.find(x => x.id === receiptsFor);
+        if (!p) return null;
+        return <ReceiptsDialog payment={p} title={`${owner.name}, ${p.period ? shortYm(p.period) : 'posebna uplata'}`} onClose={() => setReceiptsFor(null)} />;
+      })()}
       {pasting && (
         <PasteImport
           name={owner.name}

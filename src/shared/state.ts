@@ -59,7 +59,7 @@ const strip = <T extends { payments: Payment[] }>(o: T): Omit<T, 'payments'> => 
 };
 
 // fields maintained by the server are ignored when diffing
-const paymentKey = (p: Payment) => JSON.stringify({ ...p, recordedBy: undefined });
+const paymentKey = (p: Payment) => JSON.stringify({ ...p, recordedBy: undefined, receipts: undefined });
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /** Computes the minimal list of operations that turns `prev` into `next`. */
