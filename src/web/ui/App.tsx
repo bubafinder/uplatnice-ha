@@ -9,6 +9,7 @@ import { ProfileView } from './ProfileView';
 import { Scan } from './Scan';
 import { Templates } from './Templates';
 import { Trackers } from './Trackers';
+import { ReceiptsProvider } from './receipts';
 import { useStore, type SyncStatus } from './useStore';
 
 type Tab = 'slip' | 'templates' | 'trackers' | 'import' | 'profile';
@@ -31,7 +32,7 @@ const STATUS_TEXT: Record<SyncStatus, string> = {
 };
 
 export function App() {
-  const { store, update, replace, status, loadError, retry } = useStore();
+  const { store, update, replace, status, loadError, retry, ensureSynced } = useStore();
   if (!store) {
     return (
       <div className="boot">
@@ -47,10 +48,10 @@ export function App() {
       </div>
     );
   }
-  return <Loaded store={store} update={update} replace={replace} status={status} />;
+  return <Loaded store={store} update={update} replace={replace} status={status} ensureSynced={ensureSynced} />;
 }
 
-function Loaded({ store, update, replace, status }: { store: Store; update: (fn: (s: Store) => Store) => void; replace: (s: Store) => void; status: SyncStatus }) {
+function Loaded({ store, update, replace, status, ensureSynced }: { store: Store; update: (fn: (s: Store) => Store) => void; replace: (s: Store) => void; status: SyncStatus; ensureSynced: () => Promise<void> }) {
   const [route, setRoute] = useState<Route>(() => ({ tab: loadTab() ?? (store.templates.length ? 'templates' : 'slip') }));
   const go = (r: Route) => { setRoute(r); window.scrollTo({ top: 0 }); };
   const profileFilled = !!store.profile.name.trim();
@@ -89,6 +90,7 @@ function Loaded({ store, update, replace, status }: { store: Store; update: (fn:
   const counts: Partial<Record<Tab, number>> = { templates: store.templates.length, trackers: store.trackers.length };
 
   return (
+    <ReceiptsProvider ensureSynced={ensureSynced} replace={replace} toast={toast}>
     <div className="app">
       <header className="top">
         <div className="brand">
@@ -152,6 +154,7 @@ function Loaded({ store, update, replace, status }: { store: Store; update: (fn:
 
       <div className={'toast' + (toastMsg ? ' is-on' : '')} role="status" aria-live="polite">{toastMsg}</div>
     </div>
+    </ReceiptsProvider>
   );
 }
 

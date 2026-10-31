@@ -16,6 +16,7 @@ Images are published to GitHub Container Registry for `aarch64` (Raspberry Pi 4/
 - Templates with month placeholders (`{mjesec}`, `{Mjesec}`, `{mm}`, `{gg}`, `{godina}`).
 - Payment history per template and trackers for bills without a slip: yearly totals, missing months, pause months, HRK amounts kept as-is.
 - Paste import from notes (`11/25 - 40 aircash`), barcode import from PDF/images, backup import from the standalone HTML version.
+- Payment confirmations (PDF/images) per payment record, with in-app preview, ZIP export and automatic photo downscaling.
 - Every payment stores the Home Assistant user who recorded it.
 
 ## Development
@@ -30,7 +31,12 @@ npm start                 # server on :8099 with ALLOW_ANY_CLIENT=1, data in ./d
 npm run ingress-mock      # http://127.0.0.1:8123/hassio/ingress/uplatnice – mimics HA Ingress
 ```
 
-End-to-end test (needs Playwright): `node test/e2e/e2e.cjs` with the server and the ingress mock running.
+End-to-end tests (need Playwright; `receipts.e2e.cjs` also needs `sharp`) run against a server with an empty database and the ingress mock:
+
+```sh
+node test/e2e/e2e.cjs
+node test/e2e/receipts.e2e.cjs
+```
 
 ## Architecture
 

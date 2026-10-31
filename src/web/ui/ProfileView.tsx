@@ -4,15 +4,23 @@ import { invalidChars, MAX, charLength } from '../../shared/text';
 import type { Issue, Profile } from '../../shared/types';
 import { api } from '../lib/api';
 import { exportBackup, type Store } from '../lib/storage';
+import { formatSize } from '../lib/images';
 import { plural } from '../../shared/history';
 import { downloadBlob } from './download';
 import { Field } from './fields';
+import { receiptsZipUrl } from './receipts';
 
 interface Props {
   store: Store;
   replace: (s: Store) => void;
   update: (fn: (s: Store) => Store) => void;
   toast: (m: string) => void;
+}
+
+function receiptStats(s: Store) {
+  const all = [...s.templates, ...s.trackers].flatMap(o => o.payments.flatMap(p => p.receipts ?? []));
+  if (!all.length) return '';
+  return ` (${all.length}, ${formatSize(all.reduce((a, r) => a + r.size, 0))})`;
 }
 
 function textIssue(field: 'payer.name' | 'payer.street' | 'payer.city', v: string): Issue | undefined {
@@ -56,6 +64,7 @@ export function ProfileView({ store, replace, update, toast }: Props) {
 
       <h2 className="section">Sigurnosna kopija i uvoz</h2>
       <p className="lead">Svi podaci spremljeni su na Home Assistantu i ulaze u njegovu sigurnosnu kopiju. Ovdje možeš dodatno preuzeti kopiju u datoteku. „Uvezi iz kopije" dodaje predloške, evidencije i zapise iz datoteke (i iz ranije HTML verzije aplikacije); postojeći podaci se ne brišu.</p>
+      <p className="lead">Potvrde plaćanja nisu u JSON kopiji jer mogu biti velike. Sve su u Home Assistant backupu, a ovdje ih možeš preuzeti i kao ZIP{receiptStats(store)}.</p>
       <p className="backup-when">{store.lastBackupAt ? `Zadnja kopija: ${new Date(store.lastBackupAt).toLocaleDateString('hr-HR')}` : 'Kopija još nije napravljena.'}</p>
       <div className="row-actions">
         <button className="primary" onClick={() => {
@@ -63,6 +72,7 @@ export function ProfileView({ store, replace, update, toast }: Props) {
           update(s => ({ ...s, lastBackupAt: new Date().toISOString() }));
         }}>Preuzmi sigurnosnu kopiju</button>
         <button onClick={() => file.current?.click()}>Uvezi iz kopije…</button>
+        <a className="btn" href={receiptsZipUrl} download>Preuzmi sve potvrde (ZIP)</a>
         <input ref={file} type="file" accept="application/json,.json" hidden onChange={e => { const f = e.target.files?.[0]; if (f) doImport(f); e.target.value = ''; }} />
       </div>
     </section>

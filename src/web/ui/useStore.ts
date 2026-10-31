@@ -71,6 +71,17 @@ export function useStore() {
     timer.current = window.setTimeout(flush, FLUSH_DELAY);
   }, [flush]);
 
+  /** Resolves once every local change has been saved (needed before uploading a receipt for a new payment). */
+  const ensureSynced = useCallback(async () => {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      window.clearTimeout(timer.current);
+      while (inFlight.current) await new Promise(r => setTimeout(r, 50));
+      if (!local.current || !synced.current || !diffState(synced.current, local.current).length) return;
+      await flush();
+    }
+    throw new Error('Promjene nisu spremljene na poslužitelj.');
+  }, [flush]);
+
   /** Replaces the state with one returned by the server (e.g. after an import). */
   const replace = useCallback((s: AppState) => {
     synced.current = s;
@@ -99,5 +110,5 @@ export function useStore() {
     };
   }, [load, flush]);
 
-  return { store, update, replace, status, loadError, retry: load, flush };
+  return { store, update, replace, status, loadError, retry: load, flush, ensureSynced };
 }
