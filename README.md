@@ -42,3 +42,12 @@ End-to-end test (needs Playwright): `node test/e2e/e2e.cjs` with the server and 
 | `uplatnice/` | Home Assistant add-on (Ingress, port 8099, data in `/data/uplatnice.db`) |
 
 Third-party: bwip-js (MIT, `src/web/vendor`), DejaVu fonts (subset, `assets/fonts`).
+
+## Workflow and releases
+
+- All changes go through pull requests into `main`; CI runs tests and the build on every PR.
+- To release: bump `version` in `uplatnice/config.yaml`, add a `uplatnice/CHANGELOG.md` entry, merge, then tag the merge commit:
+  ```sh
+  git tag v0.1.1 && git push origin v0.1.1
+  ```
+  The tag publishes the add-on images to GHCR and Home Assistant offers the update.

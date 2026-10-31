@@ -1,23 +1,23 @@
 # Uplatnice
 
-Izrada hrvatskih uplatnica (HUB-3A) s PDF417 barkodom koji se skenira mobilnim bankarstvom, predlošci za redovita plaćanja, povijest plaćanja i evidencije računa.
+Create Croatian HUB-3A payment slips (uplatnice) with a PDF417 barcode that mobile banking apps can scan, keep templates for recurring payments, and track payment history and bills.
 
-## Korištenje
+## Usage
 
-Nakon pokretanja add-ona u bočnom izborniku Home Assistanta pojavi se **Uplatnice**. Aplikacija je dostupna svima koji imaju pristup ovom Home Assistantu, na računalu i u Home Assistant aplikaciji na mobitelu. Ako Home Assistantu pristupaš izvan kuće (npr. VPN), radi i tamo.
+Once the add-on is running, **Uplatnice** appears in the Home Assistant sidebar. Everyone with access to this Home Assistant can use it, on desktop and in the Home Assistant companion app. If you reach Home Assistant from outside your home (for example over VPN), the app works there too.
 
-- **Uplatnica** – ispuni podatke, skeniraj barkod s ekrana ili preuzmi PDF. „Zabilježi plaćanje” sprema zapis u povijest.
-- **Predlošci** – uplatnice koje plaćaš redovito. U opisu `{mjesec}`, `{mm}`, `{gg}` i `{godina}` mijenjaju se automatski.
-- **Evidencije** – povijest plaćanja za račune bez uplatnice (voda, struja…).
-- **Učitaj** – pročitaj barkod s tuđe uplatnice (PDF ili slika) i spremi ga kao predložak.
-- **Moj profil** – zajednički podaci platitelja, sigurnosna kopija i uvoz.
+- **Uplatnica** – fill in the slip, scan the barcode from the screen or download the PDF. *Zabilježi plaćanje* records the payment in the history.
+- **Predlošci** – templates for recurring payments. `{mjesec}`, `{mm}`, `{gg}` and `{godina}` in the description are replaced with the selected month.
+- **Evidencije** – payment history for bills without a slip (water, electricity, …).
+- **Učitaj** – read the barcode from an existing slip (PDF or image) and save it as a template.
+- **Moj profil** – shared payer details, backup download and import.
 
-Uz svaki zapis o plaćanju sprema se ime Home Assistant korisnika koji ga je unio.
+Each payment record stores the name of the Home Assistant user who entered it.
 
-## Prijenos iz HTML verzije
+## Moving from the standalone HTML version
 
-U staroj `uplatnice.html` datoteci preuzmi sigurnosnu kopiju (Moj profil → Preuzmi sigurnosnu kopiju), zatim je u add-onu uvezi (Moj profil → Uvezi iz kopije). Uvoz dodaje podatke i ne briše postojeće.
+In the old `uplatnice.html` file download a backup (*Moj profil → Preuzmi sigurnosnu kopiju*), then import it in the add-on (*Moj profil → Uvezi iz kopije*). Importing adds data and never deletes existing entries.
 
-## Podaci i sigurnosna kopija
+## Data and backups
 
-Svi podaci su u datoteci `/data/uplatnice.db` unutar add-ona i ulaze u sigurnosnu kopiju Home Assistanta. Add-on prima zahtjeve samo kroz Home Assistant (Ingress), pa prijavu i dozvole rješava Home Assistant.
+All data is stored in `/data/uplatnice.db` inside the add-on and is included in Home Assistant backups. The add-on only accepts requests through Home Assistant Ingress, so Home Assistant handles login and permissions.
