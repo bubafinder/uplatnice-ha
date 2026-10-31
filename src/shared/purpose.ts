@@ -1,0 +1,51 @@
+// Purpose codes (ISO 20022 External Purpose Code) with Croatian labels.
+// The list covers the most common codes; any other 4-letter code is accepted too.
+
+export interface Purpose { code: string; label: string; group: string }
+
+export const PURPOSES: Purpose[] = [
+  { code: 'OTHR', label: 'Ostala plaćanja', group: 'Najčešće' },
+  { code: 'COST', label: 'Troškovi', group: 'Najčešće' },
+  { code: 'GDSV', label: 'Kupnja robe i usluga', group: 'Najčešće' },
+  { code: 'SCVE', label: 'Kupnja usluga', group: 'Najčešće' },
+  { code: 'GDDS', label: 'Kupnja robe', group: 'Najčešće' },
+  { code: 'SUPP', label: 'Plaćanje dobavljaču', group: 'Najčešće' },
+  { code: 'CHAR', label: 'Dobrotvorna uplata, donacija', group: 'Najčešće' },
+  { code: 'CBFF', label: 'Kapitalna štednja', group: 'Štednja i krediti' },
+  { code: 'LOAR', label: 'Otplata kredita', group: 'Štednja i krediti' },
+  { code: 'LOAN', label: 'Kredit', group: 'Štednja i krediti' },
+  { code: 'DEPT', label: 'Depozit', group: 'Štednja i krediti' },
+  { code: 'INTE', label: 'Kamate', group: 'Štednja i krediti' },
+  { code: 'ELEC', label: 'Električna energija', group: 'Režije' },
+  { code: 'GASB', label: 'Plin', group: 'Režije' },
+  { code: 'WTER', label: 'Voda', group: 'Režije' },
+  { code: 'OTLC', label: 'Ostale telekomunikacijske usluge', group: 'Režije' },
+  { code: 'PHON', label: 'Telefon', group: 'Režije' },
+  { code: 'NWCH', label: 'Mrežne usluge (internet)', group: 'Režije' },
+  { code: 'CBTV', label: 'Kabelska televizija', group: 'Režije' },
+  { code: 'UBIL', label: 'Komunalne usluge', group: 'Režije' },
+  { code: 'RENT', label: 'Najamnina', group: 'Stanovanje' },
+  { code: 'HLRP', label: 'Otplata stambenog kredita', group: 'Stanovanje' },
+  { code: 'MDCS', label: 'Zdravstvene usluge', group: 'Obrazovanje i zdravlje' },
+  { code: 'EDUC', label: 'Obrazovanje, školarina', group: 'Obrazovanje i zdravlje' },
+  { code: 'STDY', label: 'Studij', group: 'Obrazovanje i zdravlje' },
+  { code: 'INSU', label: 'Premija osiguranja', group: 'Osiguranje' },
+  { code: 'LIFI', label: 'Životno osiguranje', group: 'Osiguranje' },
+  { code: 'HLTI', label: 'Zdravstveno osiguranje', group: 'Osiguranje' },
+  { code: 'VIEW', label: 'Osiguranje vozila', group: 'Osiguranje' },
+  { code: 'TAXS', label: 'Porez', group: 'Porezi i država' },
+  { code: 'VATX', label: 'Porez na dodanu vrijednost', group: 'Porezi i država' },
+  { code: 'GOVT', label: 'Plaćanje državi', group: 'Porezi i država' },
+  { code: 'FINE', label: 'Novčana kazna', group: 'Porezi i država' },
+  { code: 'SALA', label: 'Plaća', group: 'Primanja' },
+  { code: 'PENS', label: 'Mirovina', group: 'Primanja' },
+  { code: 'ALMY', label: 'Alimentacija', group: 'Primanja' },
+  { code: 'BONU', label: 'Bonus', group: 'Primanja' },
+  { code: 'COMM', label: 'Provizija', group: 'Ostalo' },
+  { code: 'CDCD', label: 'Plaćanje karticom', group: 'Ostalo' },
+  { code: 'TRAD', label: 'Trgovinske usluge', group: 'Ostalo' },
+  { code: 'ADVA', label: 'Predujam', group: 'Ostalo' },
+  { code: 'CASH', label: 'Upravljanje gotovinom', group: 'Ostalo' },
+];
+
+export const PURPOSE_MAP = new Map(PURPOSES.map(p => [p.code, p]));

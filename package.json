@@ -1,0 +1,26 @@
+{
+  "name": "uplatnice-ha",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Croatian HUB-3A payment slips with PDF417 barcodes, templates and payment history – a Home Assistant add-on",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "tsx --test test/*.test.ts",
+    "start": "ALLOW_ANY_CLIENT=1 DB_FILE=./data/uplatnice.db node --disable-warning=ExperimentalWarning dist/server.mjs",
+    "ingress-mock": "node test/e2e/ingress-proxy.mjs"
+  },
+  "devDependencies": {
+    "@zxing/library": "^0.21.3 || ^0.22.0 || ^0.23.0",
+    "esbuild": ">=0.25.0 <1",
+    "jspdf": "^3.0.1 || ^4.0.0",
+    "pdfjs-dist": "^5.4.0 || ^6.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsx": "^4.19.0"
+  }
+}
