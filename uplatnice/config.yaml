@@ -1,7 +1,7 @@
 name: Uplatnice
 version: "0.1.0"
 slug: uplatnice
-description: HUB-3A uplatnice s barkodom, predlošci, povijest plaćanja i evidencije
+description: Croatian HUB-3A payment slips with barcode, templates, payment history and bill trackers
 url: https://github.com/bubafinder/uplatnice-ha
 arch:
   - aarch64
