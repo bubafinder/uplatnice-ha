@@ -1,7 +1,7 @@
 // HTTP server: serves the single-page app and a small JSON API behind Home Assistant Ingress
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import type { Op } from '../shared/state';
 import { Store } from './db';
 
@@ -13,6 +13,8 @@ const INGRESS_IP = '172.30.32.2';
 const ALLOW_ANY = process.env.ALLOW_ANY_CLIENT === '1'; // development only
 const MAX_BODY = 10 * 1024 * 1024;
 
+// SQLite does not create missing directories (e.g. ./data during local development)
+mkdirSync(dirname(DB_FILE), { recursive: true });
 const store = new Store(DB_FILE);
 const indexHtml = readFileSync(join(WEB_DIR, 'index.html'));
 
