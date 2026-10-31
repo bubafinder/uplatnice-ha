@@ -78,13 +78,13 @@ const settle = page => page.waitForTimeout(900); // let the debounced sync finis
 
   // second family member sees the same data and adds a tracker entry
   const ana = await openApp(browser, 'Ana', { width: 390, height: 844 });
-  await ana.app.locator('.bottom-nav button:has-text("Predlošci")').click();
+  await ana.app.locator('.mobile-nav button:has-text("Predlošci")').click();
   await ana.page.screenshot({ path: `${OUT}/04-ana-templates-mobile.png` });
   const anaSees = await ana.app.locator('.tpl').count();
   await ana.app.locator('.tpl-main').first().click();
   await ana.app.locator('.hist-table').waitFor();
   await ana.page.screenshot({ path: `${OUT}/05-ana-history-mobile.png`, fullPage: true });
-  await ana.app.locator('.bottom-nav button:has-text("Evidencije")').click();
+  await ana.app.locator('.mobile-nav button:has-text("Evidencije")').click();
   await ana.app.locator('#tr-name').fill('Struja');
   await ana.app.locator('button:has-text("Dodaj")').click();
   await ana.app.locator('button:has-text("Dodaj zapis")').click();
@@ -94,7 +94,7 @@ const settle = page => page.waitForTimeout(900); // let the debounced sync finis
   await settle(ana.page);
   await ana.page.screenshot({ path: `${OUT}/06-ana-tracker-mobile.png`, fullPage: true });
   // mobile slip
-  await ana.app.locator('.bottom-nav button:has-text("Uplatnica")').click();
+  await ana.app.locator('.mobile-nav button:has-text("Uplatnica")').click();
   await ana.page.screenshot({ path: `${OUT}/07-ana-slip-mobile.png`, fullPage: true });
 
   // Ivan's tab refreshes on focus and shows Ana's tracker with her name

@@ -149,7 +149,7 @@ const step = (name) => console.log(`✓ ${name}`);
   const mpage = await mctx.newPage();
   await mpage.goto(`${BASE}/hassio/ingress/uplatnice`);
   const mapp = mpage.frameLocator('#ingress');
-  await mapp.locator('.bottom-nav button:has-text("Predlošci")').click();
+  await mapp.locator('.mobile-nav button:has-text("Predlošci")').click();
   await mapp.locator('.tpl-main').first().click();
   await mapp.locator('.receipt-btn').first().click();
   await mapp.locator('.pdf-page').first().waitFor({ timeout: 20000 });

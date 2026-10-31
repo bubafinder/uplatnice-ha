@@ -53,7 +53,12 @@ export function App() {
 
 function Loaded({ store, update, replace, status, ensureSynced }: { store: Store; update: (fn: (s: Store) => Store) => void; replace: (s: Store) => void; status: SyncStatus; ensureSynced: () => Promise<void> }) {
   const [route, setRoute] = useState<Route>(() => ({ tab: loadTab() ?? (store.templates.length ? 'templates' : 'slip') }));
-  const go = (r: Route) => { setRoute(r); window.scrollTo({ top: 0 }); };
+  const go = (r: Route) => {
+    setRoute(r);
+    // on phones <main> is the scroll container, on desktop the window is
+    window.scrollTo({ top: 0 });
+    document.querySelector('main')?.scrollTo({ top: 0 });
+  };
   const profileFilled = !!store.profile.name.trim();
   const [draft, setDraftState] = useState<Draft>(() => newDraft(profileFilled));
   const setDraft = useCallback((fn: (d: Draft) => Draft) => setDraftState(fn), []);
@@ -110,6 +115,14 @@ function Loaded({ store, update, replace, status, ensureSynced }: { store: Store
           <span className="sync-text">{STATUS_TEXT[status]}</span>
         </span>
       </header>
+      <nav className="mobile-nav" aria-label="Glavni izbornik">
+        {TABS.map(t => (
+          <button key={t.id} className={route.tab === t.id ? 'is-active' : ''} aria-current={route.tab === t.id ? 'page' : undefined} onClick={() => go({ tab: t.id })}>
+            <svg viewBox="0 0 24 24" aria-hidden width="22" height="22"><path d={t.icon} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span>{t.short}</span>
+          </button>
+        ))}
+      </nav>
 
       <main>
         {route.tab === 'slip' && (
@@ -143,14 +156,7 @@ function Loaded({ store, update, replace, status, ensureSynced }: { store: Store
         {route.tab === 'profile' && <ProfileView store={store} replace={replace} update={update} toast={toast} />}
       </main>
 
-      <nav className="bottom-nav" aria-label="Glavni izbornik">
-        {TABS.map(t => (
-          <button key={t.id} className={route.tab === t.id ? 'is-active' : ''} aria-current={route.tab === t.id ? 'page' : undefined} onClick={() => go({ tab: t.id })}>
-            <svg viewBox="0 0 24 24" aria-hidden width="22" height="22"><path d={t.icon} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            <span>{t.short}</span>
-          </button>
-        ))}
-      </nav>
+
 
       <div className={'toast' + (toastMsg ? ' is-on' : '')} role="status" aria-live="polite">{toastMsg}</div>
     </div>
