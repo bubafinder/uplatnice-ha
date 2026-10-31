@@ -397,7 +397,7 @@ textarea.paste:focus { outline: 0; border-color: var(--pen); box-shadow: 0 0 0 3
 .sync-offline, .sync-error { color: var(--err); }
 .sync-offline .dot, .sync-error .dot { background: var(--err); }
 
-.bottom-nav { display: none; }
+.mobile-nav { display: none; }
 .overlay-hint { font-size: 14px !important; }
 .overlay img.overlay-code { image-rendering: pixelated; height: auto; }
 
@@ -409,20 +409,6 @@ textarea.paste:focus { outline: 0; border-color: var(--pen); box-shadow: 0 0 0 3
   .brand span { display: inline; }
   .sync-text { display: none; }
   .sync .dot { width: 10px; height: 10px; }
-  main { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
-  .bottom-nav {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-    background: var(--paper); border-top: 1px solid var(--line);
-    padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
-  }
-  .bottom-nav button {
-    border: 0; background: none; border-radius: 8px; padding: 6px 2px 4px;
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    font-size: 11.5px; font-weight: 500; color: var(--muted);
-  }
-  .bottom-nav button.is-active { color: var(--form); }
-  .toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
 
   /* history as cards */
   .table-wrap { background: transparent; border: 0; overflow: visible; }
@@ -501,4 +487,71 @@ a.btn:hover { border-color: #b8bfca; }
   .modal { padding: 18px 16px; }
   .receipts-body { grid-template-columns: minmax(0, 1fr); }
   .receipts-head h2 { font-size: 17px; }
+}
+
+/* ---------- phone app shell ----------
+   On phones the page is exactly one screen tall: the header and the tab bar sit at the top and only
+   <main> scrolls. This keeps navigation visible when the Home Assistant app sizes its iframe to the
+   content (iOS) and when browser toolbars float over the bottom of the screen (Safari). */
+@media (max-width: 680px) {
+  html, body, #root { height: 100%; overflow: hidden; }
+  .app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  .app > .top { position: static; flex: none; height: 48px; border-bottom: 0; }
+  .mobile-nav {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); flex: none;
+    background: var(--paper); border-bottom: 1px solid var(--line); padding: 0 4px;
+  }
+  .mobile-nav button {
+    border: 0; border-radius: 0; background: none; padding: 6px 2px 7px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 11.5px; font-weight: 500; color: var(--muted);
+    border-bottom: 3px solid transparent; min-width: 0;
+  }
+  .mobile-nav button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-nav button.is-active { color: var(--ink); border-bottom-color: var(--form); }
+  .mobile-nav .badge { display: none; }
+  .app > main {
+    flex: 1 1 auto; min-height: 0; width: 100%;
+    overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    /* room to scroll the last item above a floating browser toolbar */
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  }
+  .toast { top: 112px; bottom: auto; transform: translate(-50%, -12px); }
+  .toast.is-on { transform: translate(-50%, 0); }
+  .page-head { flex-wrap: wrap; }
+  .page-head .search { width: 100%; }
+}
+@media (max-width: 680px) {
+  /* dialogs start at the top and scroll, so their buttons can be lifted above a browser toolbar */
+  .modal-back {
+    display: block; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    padding: 10px 10px calc(120px + env(safe-area-inset-bottom));
+  }
+  .modal, .modal.wide, .receipts-modal { width: 100%; max-height: none; margin: 0 auto; }
+  .import-table-wrap { max-height: none; }
+}
+@media (max-width: 680px) {
+  /* template and tracker lists: text full width, status and actions below */
+  .tpl { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 14px 16px; }
+  .tpl .status { justify-self: start; white-space: normal; }
+  .tpl-actions { justify-content: flex-start; }
+  .tpl-amt, .tpl-used { display: none; }
+
+  /* pasted notes preview as cards: checkbox + original line, then editable fields */
+  .import-table-wrap { border: 0; overflow: visible; }
+  .import-table, .import-table tbody { display: block; }
+  .import-table thead { display: none; }
+  .import-table tr {
+    display: grid; grid-template-columns: 28px repeat(2, minmax(0, 1fr)); gap: 6px 8px; align-items: center;
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; margin-bottom: 8px; background: var(--paper);
+  }
+  .import-table td { display: block; border: 0; padding: 0; min-width: 0; }
+  .import-table td:first-child { grid-row: 1; grid-column: 1; }
+  .import-table td.raw { grid-row: 1; grid-column: 2 / -1; white-space: normal; overflow-wrap: anywhere; }
+  .import-table td:nth-child(3) { grid-column: 2; }
+  .import-table td.amt-cell { grid-column: 3; display: flex; align-items: center; gap: 4px; }
+  .import-table td:nth-child(5) { grid-column: 2; }
+  .import-table td:nth-child(6) { grid-column: 3; }
+  .import-table .cell { border-color: var(--line); background: #fff; }
+  .import-table .w-per, .import-table .w-amt2 { width: 100%; }
 }

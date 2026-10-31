@@ -12,7 +12,7 @@ http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
   if (url.pathname === '/hassio/ingress/uplatnice') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(`<!doctype html><title>Home Assistant</title><style>body{margin:0}iframe{border:0;width:100vw;height:100vh;display:block}</style><iframe id="ingress" src="${PREFIX}/"></iframe>`);
+    return res.end(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home Assistant</title><style>body{margin:0}iframe{border:0;width:100vw;height:100vh;display:block}</style><iframe id="ingress" src="${PREFIX}/"></iframe>`);
   }
   if (!url.pathname.startsWith(PREFIX)) {
     res.writeHead(404);

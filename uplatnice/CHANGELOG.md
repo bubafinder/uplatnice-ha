@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Phones: the navigation is now a tab bar at the top of the screen. It was hidden behind Safari's floating toolbar and could end up at the bottom of the page in the Home Assistant iOS app.
+- Phones: the page is one screen tall and only the content scrolls, so the navigation stays visible; dialogs scroll so their buttons can be moved above the browser toolbar.
+- Phones: template and tracker lists, the pasted-notes preview and the search field are laid out for narrow screens.
+
 ## 0.2.0
 
 - Payment confirmations (receipts): attach PDFs or images to any payment record, either in the quick entry dialog or later from the history (📎). Drag & drop and paste (Ctrl+V) are supported.

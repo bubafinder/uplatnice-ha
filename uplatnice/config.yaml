@@ -1,5 +1,5 @@
 name: Uplatnice
-version: "0.2.0"
+version: "0.2.1"
 slug: uplatnice
 description: Croatian HUB-3A payment slips with barcode, templates, payment history and bill trackers
 url: https://github.com/bubafinder/uplatnice-ha

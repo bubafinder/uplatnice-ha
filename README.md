@@ -36,6 +36,7 @@ End-to-end tests (need Playwright; `receipts.e2e.cjs` also needs `sharp`) run ag
 ```sh
 node test/e2e/e2e.cjs
 node test/e2e/receipts.e2e.cjs
+node test/e2e/mobile.e2e.cjs     # every page and dialog at phone width (Safari toolbar and iOS app emulation)
 ```
 
 ## Architecture
